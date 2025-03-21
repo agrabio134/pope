@@ -1,215 +1,279 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" class="dark-mode">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>$POPE Meme Coin</title>
+    <title>$POPE | The Sacred Meme Coin</title>
     <link rel="icon" type="image/png" sizes="32x32" href="./assets/icon.png">
-        
-    <!-- Font Awesome Icons -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
-
-    <!-- Custom Stylesheet -->
-    <link rel="stylesheet" href="styles.css">
-
-    
+    <link rel="stylesheet" href="styles.css?v=1.3">
 </head>
-<body>
+<body> 
+    
+    <!-- Loading Screen (Simplified Heavenly Door Preloader) -->
+    <div class="loading-screen">
+        <div class="heaven-preloader">
+            <div class="loading-text">Entering the $POPE Sanctuary...</div>
+        </div>
+    </div>
 
-    <!-- Header -->
-    <header>
-        <h1>OLDEST <span class="pope">$POPE</span> ON SOL</h1>
-        <p class="sub-header">A 350-day-old token evolving with CTO</p>
-        
+    <!-- Theme Toggle -->
+    <div class="theme-toggle">
+        <button id="theme-btn" aria-label="Toggle theme">
+            <i class="fa-solid fa-sun"></i>
+            <i class="fa-solid fa-moon"></i>
+        </button>
+    </div>
+
+    <!-- Navigation -->
+    <nav class="navbar">
+        <div class="nav-container">
+            <div class="logo"><span class="pope">$POPE</span></div>
+            <div class="nav-links">
+                <a href="#about">Mission</a>
+                <a href="#why-pope">Virtues</a>
+                <a href="#memes">Memes</a>
+                <a href="#how-to-buy">Join</a>
+                <a href="#play-game" >Play Game</a> <!-- Direct link to game -->
+            </div>
+            <button class="menu-toggle" aria-label="Toggle menu"><i class="fa-solid fa-bars"></i></button>
+        </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <header class="hero">
+        <div class="hero-overlay"></div>
+        <div class="hero-content animate-float">
+            <h1>Blessed Be <span class="pope">$POPE</span></h1>
+            <p>The holiest meme coin on Solana • 350+ days of divine legacy</p>
+            <div class="hero-cta">
+                <a href="https://pump.fun/coin/Eyo6MC3mCjkZDgB8pafGyKyAhEi4xuykbqw7WhcDG4ks" target="_blank" class="btn btn-primary animate-glow">Claim Your Blessing</a>
+                <a href="#how-to-buy" class="btn btn-secondary">Seek Guidance</a>
+            </div>
+        </div>
     </header>
 
-    <!-- Infinite Scrolling Text -->
-    <div class="carousel-container">
-        <div class="carousel">
-            <div class="carousel-track">
-                <span>JOIN THE COMMUNITY</span>
-                <span>$POPE - THE OLDEST MEME COIN</span>
-                <span>DECENTRALIZED & COMMUNITY-DRIVEN</span>
-                <span>CTO POWERED</span>
-                <span>HOLD $POPE, HODL STRONG</span>
-                <span>BUILDING THE FUTURE OF MEMES</span>
-    
-                <!-- Duplicate the items to create the infinite effect -->
-                <span>JOIN THE COMMUNITY</span>
-                <span>$POPE - THE OLDEST MEME COIN</span>
-                <span>DECENTRALIZED & COMMUNITY-DRIVEN</span>
-                <span>CTO POWERED</span>
-                <span>HOLD $POPE, HODL STRONG</span>
-                <span>BUILDING THE FUTURE OF MEMES</span>
+    <!-- Marquee -->
+    <div class="marquee">
+        <div class="marquee-track">
+            <div class="marquee-content">
+                <span>ALL HAIL $POPE</span>
+                <span>SOLANA'S SACRED TOKEN</span>
+                <span>FAITHFUL COMMUNITY</span>
+                <span>HODL THE LIGHT</span>
+                <span>ETERNAL MEME GLORY</span>
+            </div>
+            <div class="marquee-content">
+                <span>ALL HAIL $POPE</span>
+                <span>SOLANA'S SACRED TOKEN</span>
+                <span>FAITHFUL COMMUNITY</span>
+                <span>HODL THE LIGHT</span>
+                <span>ETERNAL MEME GLORY</span>
             </div>
         </div>
     </div>
-    
-    
-    <!-- Main Section -->
-    <div class="main-container">
-        <div class="sub-container">
-            <h1 class="main-text"><span class="pope">$POPE</span> IS NOT JUST A MEME, IT'S A MOVEMENT!</h1>
-            <p>Welcome to the oldest <span class="pope">$POPE</span> on Solana. Built for the community, powered by innovation.</p>
 
-            <!-- Social Icons Section -->
-            <div class="social-icons">
-                <a href="https://t.me/OgPopeSol" target="_blank" class="telegram">
-                    <i class="fa-brands fa-telegram"></i> Telegram
-                </a>
-                <a href="https://x.com/popesolcto?s=21" target="_blank" class="twitter">
-                    <i class="fa-brands fa-x-twitter"></i> Twitter
-                </a>
+    <!-- About Section -->
+    <section id="about" class="about-section">
+        <div class="container">
+            <h2>The Holy Mission</h2>
+            <p>$POPE reigns as Solana’s anointed meme coin, guided by its devout community.</p>
+            <img src="./assets/pope-crown.png" alt="Papal Crown" class="pope-icon">
+            <div class="social-links">
+                <a href="https://t.me/OgPopeSol" target="_blank" class="social-btn telegram"><i class="fa-brands fa-telegram"></i></a>
+                <a href="https://x.com/OgPopeSol" target="_blank" class="social-btn twitter"><i class="fa-brands fa-x-twitter"></i></a>
             </div>
-
-            <!-- Buy Now Button -->
-            <div class="buy-now-container">
-                <a href="https://pump.fun/coin/Eyo6MC3mCjkZDgB8pafGyKyAhEi4xuykbqw7WhcDG4ks" target="_blank" class="buy-btn">
-                    <i class="fa-solid fa-shopping-cart"></i> Buy Now
-                </a>
-            </div>
-
-            <!-- Contract Address -->
-            <section id="about">
-                <div class="contract-box">
-                    <h2>Solana Contract Address</h2>
-                    <div class="contract-container">
-                        <span class="contract-label">CA:</span>
-                        <span class="contract-text" id="contract">Eyo6MC3mCjkZDgB8pafGyKyAhEi4xuykbqw7WhcDG4ks</span>
-                        <button class="copy-btn" onclick="copyToClipboard()">Copy Address</button>
-                    </div>
+            <div class="contract-card animate-glow">
+                <h3>Sacred Contract</h3>
+                <div class="contract-info">
+                    <span id="contract">Eyo6MC3mCjkZDgB8pafGyKyAhEi4xuykbqw7WhcDG4ks</span>
+                    <button class="copy-btn" onclick="copyToClipboard()">Copy</button>
                 </div>
-            </section>
-            
-        </div>
-    </div>
-    
-    <!-- Infinite Scrolling Text -->
-    <div class="carousel-container">
-        <div class="carousel">
-            <div class="carousel-track">
-                <span>JOIN THE COMMUNITY</span>
-                <span><span class="pope">$POPE</span> - THE OLDEST MEME COIN</span>
-                <span>DECENTRALIZED & COMMUNITY-DRIVEN</span>
-                <span>CTO POWERED</span>
-                <span>HOLD <span class="pope">$POPE</span>, HODL STRONG</span>
-                <span>BUILDING THE FUTURE OF MEMES</span>
-    
-                <!-- Duplicate the items to create the infinite effect -->
-                <span>JOIN THE COMMUNITY</span>
-                <span><span class="pope">$POPE</span> - THE OLDEST MEME COIN</span>
-                <span>DECENTRALIZED & COMMUNITY-DRIVEN</span>
-                <span>CTO POWERED</span>
-                <span>HOLD <span class="pope">$POPE</span>, HODL STRONG</span>
-                <span>BUILDING THE FUTURE OF MEMES</span>
             </div>
-        </div>
-    </div>
-
-   <!-- Why $POPE Section -->
-<section id="why-pope">
-    <h2>Why Choose <span class="pope">$POPE</span>?</h2>
-    <div class="why-cards">
-        <div class="why-card">
-            <i class="fa-solid fa-users"></i>
-            <h3>Community-Driven</h3>
-            <p>Built by the people, for the people. A strong and dedicated community powers <span class="pope">$POPE</span>.</p>
-        </div>
-        <div class="why-card">
-            <i class="fa-solid fa-history"></i>
-            <h3>Longest-Running Meme Coin</h3>
-            <p><span class="pope">$POPE</span> has been around for over 350 days, proving its longevity in the meme space.</p>
-        </div>
-        <div class="why-card">
-            <i class="fa-solid fa-shield"></i>
-            <h3>Strong Holders</h3>
-            <p>A loyal base of holders ensures stability and organic growth for the token.</p>
-        </div>
-        <div class="why-card">
-            <i class="fa-solid fa-globe"></i>
-            <h3>Global Adoption</h3>
-            <p>Recognized worldwide, <span class="pope">$POPE</span> is expanding beyond memes into real utility.</p>
-        </div>
-    </div>
-</section>
-    <!-- Meme Gallery -->
-    <section id="memes">
-        <h2 style="margin-bottom: 40px;">Top <span class="pope">$POPE</span> Memes</h2>
-        <div class="meme-gallery">
-            <img src="./assets/meme4.jpeg" alt="Meme 1">
-            <img src="./assets/meme2.jpeg" alt="Meme 2">
-            <img src="./assets/meme3.jpeg" alt="Meme 3">
-            <img src="./assets/meme6.jpeg" alt="Meme 4">
-            <img src="./assets/meme5.jpeg" alt="Meme 5">
-            <img src="./assets/meme7.jpeg" alt="Meme 6">
-            <img src="./assets/meme8.jpeg" alt="Meme 7">
-            <img src="./assets/meme9.jpeg" alt="Meme 8">
         </div>
     </section>
 
-<!-- Market Insights Section -->
-<section id="market-insights">
-    <h2>Market Insights</h2>
-    <p>Track real-time market trends and growth of <span class="pope">$POPE</span>.</p>
-    <div id="dexscreener-embed">
-        <iframe 
-            src="https://dexscreener.com/solana/Eyo6MC3mCjkZDgB8pafGyKyAhEi4xuykbqw7WhcDG4ks?embed=1&loadChartSettings=0&trades=0&tabs=0&info=0&chartLeftToolbar=0&chartTheme=dark&theme=dark&chartStyle=0&chartType=usd&interval=15">
-        </iframe>
-    </div>
-</section>
+    <!-- Why $POPE Section -->
+    <section id="why-pope" class="features-section">
+        <div class="container">
+            <h2>Virtues of <span class="pope">$POPE</span></h2>
+            <div class="feature-grid">
+                <div class="feature-card animate-reveal">
+                    <i class="fa-solid fa-users"></i>
+                    <h3>Divine Community</h3>
+                    <p>Bound by faith and devotion</p>
+                </div>
+                <div class="feature-card animate-reveal">
+                    <i class="fa-solid fa-history"></i>
+                    <h3>Eternal Reign</h3>
+                    <p>Over 350 days of holiness</p>
+                </div>
+                <div class="feature-card animate-reveal">
+                    <i class="fa-solid fa-shield"></i>
+                    <h3>Holy Guardians</h3>
+                    <p>Steadfast holders of the light</p>
+                </div>
+                <div class="feature-card animate-reveal">
+                    <i class="fa-solid fa-globe"></i>
+                    <h3>Sacred Reach</h3>
+                    <p>Blessing the world with memes</p>
+                </div>
+            </div>
+            <div class="media-showcase">
+                <img src="./assets/OG.jpg" alt="Pope Throne" class="animate-float">
+                <video src="./assets/vid_banner.MP4" autoplay loop muted playsinline class="animate-glow"></video>
+            </div>
+        </div>
+    </section>
 
+    <!-- Meme Gallery -->
+    <section id="memes" class="gallery-section">
+        <div class="container">
+            <h2>Holy <span class="pope">$POPE</span> Memes</h2>
+            <div class="meme-grid">
+                <img src="./assets/meme4.jpeg" alt="Meme 1" class="animate-pop">
+                <img src="./assets/meme2.jpeg" alt="Meme 2" class="animate-pop">
+                <img src="./assets/meme3.jpeg" alt="Meme 3" class="animate-pop">
+                <img src="./assets/meme10.jpg" alt="Meme 8" class="animate-pop">
+                <img src="./assets/meme11.jpg" alt="Meme 8" class="animate-pop">
+                <img src="./assets/meme8.jpeg" alt="Meme 7" class="animate-pop">
+                <img src="./assets/meme7.jpeg" alt="Meme 6" class="animate-pop">
+                <img src="./assets/meme5.jpeg" alt="Meme 5" class="animate-pop">
+                <img src="./assets/meme6.jpeg" alt="Meme 4" class="animate-pop">
+                <img src="./assets/meme9.jpeg" alt="Meme 8" class="animate-pop">
+                <img src="./assets/meme1-1.jpg" alt="Meme 8" class="animate-pop">
+            </div>
+        </div>
+    </section>
 
+    <!-- Market Insights -->
+    <section id="market-insights" class="market-section">
+        <div class="container">
+            <h2>Divine Market Insights</h2>
+            <div class="market-embed animate-glow">
+                <iframe src="https://dexscreener.com/solana/Eyo6MC3mCjkZDgB8pafGyKyAhEi4xuykbqw7WhcDG4ks?embed=1&loadChartSettings=0&trades=0&tabs=0&info=0&chartLeftToolbar=0&chartTheme=dark&theme=dark&chartStyle=0&chartType=usd&interval=15"></iframe>
+            </div>
+        </div>
+    </section>
 
     <!-- How to Buy -->
-    <section id="how-to-buy">
-        <h2>How to Buy <span class="pope">$POPE</span></h2>
-        <div class="buy-steps">
-            <div class="step-card">
-                <i class="fa-solid fa-wallet"></i>
-                <h3>Step 1</h3>
-                <p>Download a Solana Wallet (Phantom, Solflare, etc.)</p>
-            </div>
-            <div class="step-card">
-                <i class="fa-solid fa-coins"></i>
-                <h3>Step 2</h3>
-                <p>Buy SOL from an exchange</p>
-            </div>
-            <div class="step-card">
-                <i class="fa-solid fa-paper-plane"></i>
-                <h3>Step 3</h3>
-                <p>Transfer SOL to your wallet</p>
-            </div>
-            <div class="step-card">
-                <i class="fa-solid fa-exchange-alt"></i>
-                <h3>Step 4</h3>
-                <p>Swap SOL for <span class="pope">$POPE</span> on Pump.fun</p>
+    <section id="how-to-buy" class="guide-section">
+        <div class="container">
+            <h2>Enter the <span class="pope">$POPE</span> Order</h2>
+            <div class="steps-grid">
+                <div class="step-card animate-reveal">
+                    <div class="step-number">1</div>
+                    <i class="fa-solid fa-wallet"></i>
+                    <p>Prepare a Solana reliquary</p>
+                </div>
+                <div class="step-card animate-reveal">
+                    <div class="step-number">2</div>
+                    <i class="fa-solid fa-coins"></i>
+                    <p>Gather SOL tithes</p>
+                </div>
+                <div class="step-card animate-reveal">
+                    <div class="step-number">3</div>
+                    <i class="fa-solid fa-paper-plane"></i>
+                    <p>Offer SOL to your wallet</p>
+                </div>
+                <div class="step-card animate-reveal">
+                    <div class="step-number">4</div>
+                    <i class="fa-solid fa-exchange-alt"></i>
+                    <p>Transmute SOL to $POPE on Pump.fun</p>
+                </div>
             </div>
         </div>
     </section>
-    
 
-
+    <!-- Play Game Section with Iframe -->
+    <section id="play-game" class="game-section">
+        <div class="container">
+            <h2>Play <span class="pope">$POPE</span> - A Divine Journey</h2>
+            <button id="toggleGameBtn" class="btn btn-primary animate-glow">View Mini Game</button>
+            <iframe id="gameIframe" src="./games/index.html" class="game-iframe" frameborder="0" allowfullscreen></iframe>
+        </div>
+    </section>
 
     <!-- Footer -->
-    <footer>
-        <p>&copy; 2025 <span class="pope">$POPE</span>. All Rights Reserved. Powered by the <strong>POPE Community</strong>, developed by <strong>Harvs</strong>.</p>
+    <footer class="footer">
+        <div class="container">
+            <p>© 2025 <span class="pope">$POPE</span> Sanctum | Consecrated by Harvs</p>
+        </div>
     </footer>
 
-    <!-- JavaScript for Copy Button -->
+    <script src="https://code.responsivevoice.org/responsivevoice.js?key=xDV4qioj"></script>
     <script>
+        // Loading Screen
+        window.onload = function() {
+            const loadingScreen = document.querySelector('.loading-screen');
+            setTimeout(() => {
+                loadingScreen.style.opacity = '0';
+                setTimeout(() => loadingScreen.style.display = 'none', 500);
+            }, 3000); // 3-second loading screen
+        };
+
+        // Theme Toggle
+        const themeBtn = document.getElementById('theme-btn');
+        themeBtn.addEventListener('click', () => {
+            document.documentElement.classList.toggle('dark-mode');
+            document.documentElement.classList.toggle('light-mode');
+            localStorage.setItem('theme', document.documentElement.classList.contains('light-mode') ? 'light' : 'dark');
+        });
+
+        if (localStorage.getItem('theme') === 'light') {
+            document.documentElement.classList.remove('dark-mode');
+            document.documentElement.classList.add('light-mode');
+        }
+
+        // Copy to Clipboard
         function copyToClipboard() {
             const contractText = document.getElementById("contract").textContent;
             navigator.clipboard.writeText(contractText).then(() => {
                 const button = document.querySelector(".copy-btn");
                 button.textContent = "Copied!";
+                button.classList.add('animate-glow');
                 setTimeout(() => {
-                    button.textContent = "Copy Address";
+                    button.textContent = "Inscribe";
+                    button.classList.remove('animate-glow');
                 }, 2000);
-            }).catch(err => {
-                console.error("Error copying text: ", err);
             });
         }
-    </script>
 
+        // Scroll Reveal
+        const revealElements = document.querySelectorAll('.animate-reveal');
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.classList.add('revealed');
+                }
+            });
+        }, { threshold: 0.2 });
+
+        revealElements.forEach(el => observer.observe(el));
+
+        // Mobile Menu Toggle
+        const menuToggle = document.querySelector('.menu-toggle');
+        const navLinks = document.querySelector('.nav-links');
+        menuToggle.addEventListener('click', () => {
+            navLinks.classList.toggle('active');
+        });
+
+        // Toggle Game Iframe
+        const toggleGameBtn = document.getElementById('toggleGameBtn');
+        const gameIframe = document.getElementById('gameIframe');
+
+        toggleGameBtn.addEventListener('click', () => {
+            if (gameIframe.style.display === 'none' || gameIframe.style.display === '') {
+                gameIframe.style.display = 'block';
+                toggleGameBtn.textContent = 'Hide Mini Game';
+            } else {
+                gameIframe.style.display = 'none';
+                toggleGameBtn.textContent = 'View Mini Game';
+            }
+        });
+
+        // Initially hide the iframe
+        gameIframe.style.display = 'none';
+    </script>
 </body>
 </html>

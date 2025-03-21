@@ -1,0 +1,749 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>$POPE - A Divine Journey</title>
+  <style>
+    body {
+      margin: 0;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      background: #e0e0e0;
+      font-family: Arial, sans-serif;
+      overflow: hidden;
+    }
+    #gameCanvas {
+      border: 2px solid #333;
+      filter: blur(5px);
+      transition: filter 0.5s ease;
+    }
+    #menu {
+      position: absolute;
+      background: rgba(255, 255, 255, 0.9);
+      padding: 40px;
+      border-radius: 10px;
+      text-align: center;
+      box-shadow: 0 0 20px rgba(0, 0, 0, 0.3);
+    }
+    #playButton, #retryButton, #submitScoreButton {
+      padding: 10px 20px;
+      font-size: 18px;
+      background: #FFD700;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+      transition: background 0.3s;
+      margin: 5px;
+    }
+    #playButton:hover, #retryButton:hover, #submitScoreButton:hover {
+      background: #DAA520;
+    }
+    #scoreForm {
+      margin-top: 20px;
+    }
+    #playerName {
+      padding: 10px;
+      font-size: 18px;
+      margin-right: 10px;
+    }
+
+    @media screen and (max-width: 480px) {
+  #gameCanvas {
+    height: 200px; /* Minimum height for very small screens */
+  }
+
+  #menu {
+    padding: 15px;
+    width: 90%; /* Even wider for very small screens */
+    max-width: 200px;
+  }
+
+  #playButton, #retryButton, #submitScoreButton {
+    font-size: 12px; /* Smallest button font for very small screens */
+    padding: 6px 12px;
+    margin: 2px; /* Minimal margin for very small screens */
+  }
+
+  #playerName {
+    font-size: 12px; /* Smallest input font for very small screens */
+    padding: 5px;
+    margin-bottom: 8px; /* Reduced bottom margin for very small screens */
+  }
+}
+  </style>
+</head>
+<body>
+  <iframe id="bgMusic" width="0" height="0" src="https://www.youtube.com/embed/pR2JNaC3880?autoplay=1&loop=1&playlist=pR2JNaC3880" frameborder="0" allow="autoplay; encrypted-media" allowfullscreen></iframe>
+  <canvas id="gameCanvas" width="1300" height="800"></canvas>
+  <div id="menu">
+    <h1>$POPE - A Divine Journey</h1>
+    <button id="playButton">Begin Pilgrimage</button>
+  </div>
+  <script type="module">
+    // Import the functions you need from the SDKs you need
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/11.3.1/firebase-app.js";
+    import { getFirestore, collection, getDocs, addDoc, orderBy, limit, serverTimestamp } from "https://www.gstatic.com/firebasejs/11.3.1/firebase-firestore.js";
+    import { getAnalytics } from "https://www.gstatic.com/firebasejs/11.3.1/firebase-analytics.js";
+
+    // Your web app's Firebase configuration
+    const firebaseConfig = {
+  apiKey: "AIzaSyCa5wzV3XwXkV1nTPikclMGwQXUB7kyMkg",
+  authDomain: "pope-2f995.firebaseapp.com",
+  projectId: "pope-2f995",
+  storageBucket: "pope-2f995.firebasestorage.app",
+  messagingSenderId: "844207818891",
+  appId: "1:844207818891:web:0880db5a710b8a50c1ec8e",
+  measurementId: "G-P3YSRSSDCF"
+};
+
+    // Initialize Firebase
+    const app = initializeApp(firebaseConfig);
+    const analytics = getAnalytics(app);
+    const db = getFirestore(app);
+
+    let highScores = []; // Will be populated from Firestore
+
+    // Wait for DOM content to load and ensure canvas exists
+    document.addEventListener('DOMContentLoaded', async () => {
+      const canvas = document.getElementById('gameCanvas');
+      if (!canvas) {
+        console.error('Canvas element with ID "gameCanvas" not found.');
+        return;
+      }
+      const ctx = canvas.getContext('2d');
+      if (!ctx) {
+        console.error('Failed to get 2D context for canvas.');
+        return;
+      }
+      const menu = document.getElementById('menu');
+      const playButton = document.getElementById('playButton');
+      const bgMusic = document.getElementById('bgMusic');
+
+      // Verify image path and handle loading error
+      const popeImage = new Image();
+      popeImage.onerror = () => console.error('Failed to load pope-player.png. Check the file path or hosting.');
+      popeImage.src = './assets/pope-player.png'; // Adjust this path if necessary
+      const coinSound = new Audio('./assets/coins.ogg');
+      const hitSound = new Audio('./assets/uhh.wav');
+      const powerUpSound = new Audio('./assets/coin.mp3');
+      const choirSound = new Audio('./assets/choir.mp3');
+
+      let gameStarted = false;
+      let gameOver = false;
+      let endlessMode = false;
+      let pope = {
+        x: 500,
+        y: 550,
+        speedX: 5,
+        baseSpeedX: 5,
+        jumpSpeed: -15,
+        gravity: 0.5,
+        size: 40,
+        isJumping: false,
+        scale: 1,
+        animationFrame: 0,
+        invincibility: 0,
+        lives: 3
+      };
+      let crosses = [];
+      let obstacles = [];
+      let powerUps = [];
+      let particles = [];
+      let collected = 0;
+      let score = 0;
+      const maxCrosses = 20;
+      let worldX = 0;
+      let gameTime = 0;
+      let lastBgChange = 0;
+      let currentBgColor = '#87CEEB';
+      const fixedTimeStep = 1000 / 60;
+      let lastTime = performance.now();
+      let storyProgress = 0;
+      let orbChanges = [];
+      let lastPowerUpTime = 0;
+      let crossCountForLife = 0;
+      const maxLives = 3;
+      let hasSaved = false; // Track if score was saved this game
+
+      const terrainBaseHeight = 550;
+      const bigWaveAmplitude = 150;
+      const bigWaveWavelength = 0.005;
+      const smallWaveAmplitude = 30;
+      const smallWaveWavelength = 0.02;
+      const rampFrequency = 0.001;
+      const rampSteepness = 200;
+      const terrainSmoothing = 0.5;
+      const terrainCache = new Map();
+
+      function getVariedTerrainHeight(worldX) {
+        if (terrainCache.has(worldX)) return terrainCache.get(worldX);
+        let height = terrainBaseHeight + Math.sin(worldX * bigWaveWavelength) * bigWaveAmplitude;
+        height += Math.sin(worldX * smallWaveWavelength) * smallWaveAmplitude;
+        if (Math.random() < rampFrequency) {
+          const rampSign = Math.random() < 0.5 ? 1 : -1;
+          height += rampSign * rampSteepness * Math.sin(worldX * 0.01);
+        }
+        const previousHeight = terrainCache.get(worldX - 5) || height;
+        height = previousHeight * (1 - terrainSmoothing) + height * terrainSmoothing;
+        height = Math.max(400, Math.min(700, height));
+        terrainCache.set(worldX, height);
+        return height;
+      }
+
+      function spawnCross() {
+        const spawnX = worldX + canvas.width + Math.random() * 1400;
+        const terrainY = getVariedTerrainHeight(spawnX);
+        crosses.push({
+          x: spawnX,
+          y: terrainY - (50 + Math.random() * 150),
+          size: 10,
+          rotation: 0
+        });
+      }
+
+      function spawnObstacle() {
+        const spawnX = worldX + canvas.width + Math.random() * 1800;
+        const terrainY = getVariedTerrainHeight(spawnX);
+        obstacles.push({
+          x: spawnX,
+          y: terrainY - (20 + Math.random() * 100),
+          size: 20,
+          pulse: 1
+        });
+      }
+
+      function spawnPowerUp() {
+        const spawnX = worldX + canvas.width + Math.random() * 2000;
+        const terrainY = getVariedTerrainHeight(spawnX);
+        const types = ['speed', 'doubleScore', 'extraJump'];
+        powerUps.push({
+          x: spawnX,
+          y: terrainY - (50 + Math.random() * 150),
+          size: 15,
+          type: types[Math.floor(Math.random() * types.length)],
+          timer: 0
+        });
+      }
+
+      function spawnParticles(x, y, count, color) {
+        for (let i = 0; i < count; i++) {
+          particles.push({
+            x: x,
+            y: y,
+            vx: (Math.random() - 0.5) * 4,
+            vy: (Math.random() - 0.5) * 4 - 2,
+            size: Math.random() * 5 + 2,
+            life: 1000,
+            color: color
+          });
+        }
+      }
+
+      function handleJump() {
+        if (!pope.isJumping && gameStarted && !gameOver) {
+          pope.isJumping = true;
+          pope.jumpSpeed = -15;
+          pope.scale = 1.3;
+          setTimeout(() => { pope.scale = 1; }, 300);
+        }
+      }
+
+      function resetGame() {
+        gameStarted = false;
+        gameOver = false;
+        endlessMode = false;
+        pope = {
+          x: 500,
+          y: 550,
+          speedX: 5,
+          baseSpeedX: 5,
+          jumpSpeed: -15,
+          gravity: 0.5,
+          size: 40,
+          isJumping: false,
+          scale: 1,
+          animationFrame: 0,
+          invincibility: 0,
+          lives: 5
+        };
+        crosses = [];
+        obstacles = [];
+        powerUps = [];
+        particles = [];
+        collected = 0;
+        score = 0;
+        crossCountForLife = 0;
+        worldX = 0;
+        gameTime = 0;
+        lastBgChange = 0;
+        currentBgColor = '#87CEEB';
+        storyProgress = 0;
+        orbChanges = [];
+        lastPowerUpTime = 0;
+        hasSaved = false; // Reset save flag
+        canvas.style.filter = 'blur(5px)';
+        menu.style.display = 'block';
+        menu.innerHTML = '<h1>$POPE - A Divine Journey</h1><button id="playButton">Begin Pilgrimage</button>';
+        document.getElementById('playButton').addEventListener('click', startGame);
+        choirSound.pause();
+        choirSound.currentTime = 0;
+        bgMusic.src = "https://www.youtube.com/embed/pR2JNaC3880?autoplay=1&loop=1&playlist=pR2JNaC3880";
+        loadHighScores(); // Load high scores from Firestore on reset
+      }
+
+      function startGame() {
+        gameStarted = true;
+        menu.style.display = 'none';
+        canvas.style.filter = 'grayscale(100%)';
+        for (let i = 0; i < 5; i++) spawnCross();
+        for (let i = 0; i < 3; i++) spawnObstacle();
+      }
+
+      function showScoreForm(endCondition) {
+        const finalScore = Math.floor(score);
+        bgMusic.src = '';
+        if (endCondition === 'victory') choirSound.play();
+        menu.innerHTML = `
+          <h1>${endCondition === 'victory' ? 'Victory!' : 'Game Over'}</h1>
+          <p>Score: ${finalScore}</p>
+          <form id="scoreForm">
+            <input type="text" id="playerName" placeholder="Enter your name" maxlength="20">
+            <button type="submit" id="submitScoreButton">Save Score</button>
+          </form>
+          <button id="retryButton">Retry</button>
+        `;
+        menu.style.display = 'block';
+
+        document.getElementById('scoreForm').addEventListener('submit', (e) => {
+          e.preventDefault();
+          const name = document.getElementById('playerName').value.trim() || 'Anonymous';
+          saveHighScore(name, finalScore);
+        });
+
+        document.getElementById('retryButton').addEventListener('click', resetGame);
+      }
+
+      document.addEventListener('keydown', (e) => { if (e.code === 'Space') handleJump(); });
+      canvas.addEventListener('click', handleJump);
+
+      const storyStages = [
+        "In a world where faith meets fortune, the Pope embarks on a sacred quest through the Solana lands to restore the Vatican's lost glory by gathering divine crosses.",
+        "With each cross collected, the Pope's spirit soars higher, a beacon of hope amidst the rolling hills.",
+        "Dark forces rise as obstacles, testing the Pope's resolve—yet the faithful shall not waver.",
+        "The Solana faithful chant his name, their voices fueling his divine ascent.",
+        "Halfway there, the Vatican’s light flickers back to life, urging the Pope onward.",
+        "Through trials and triumphs, the Pope holds fast, a shepherd of both flock and fortune.",
+        "The community unites on Solana’s sacred chain, their strength a testament to divine will.",
+        "Twenty crosses gleam in hand—Prepare for the endless divine trial!"
+      ];
+      let narratedStage = -1;
+
+      function narrateStory(stage) {
+        if (stage === narratedStage || !window.responsiveVoice) return;
+        narratedStage = stage;
+        window.responsiveVoice.speak(storyStages[stage], "UK English Male", {
+          pitch: 0.5,
+          rate: 0.8,
+          volume: 1.2,
+          onend: () => { narratedStage = stage; }
+        });
+      }
+
+      if (typeof window.responsiveVoice !== 'undefined') {
+        narrateStory(0);
+      } else {
+        window.addEventListener('load', () => narrateStory(0));
+      }
+
+      function updateStory() {
+        const progress = Math.min(Math.floor((collected / maxCrosses) * (storyStages.length - 1)), storyStages.length - 1);
+        if (progress !== storyProgress) {
+          storyProgress = progress;
+          narrateStory(storyProgress);
+        }
+      }
+
+      function update(deltaTime) {
+        if (!gameStarted || gameOver) return;
+
+        pope.baseSpeedX = 5 + (gameTime * 0.01);
+        pope.speedX = pope.invincibility > 0 ? pope.baseSpeedX * 2 : pope.baseSpeedX;
+
+        worldX += pope.speedX * (deltaTime / fixedTimeStep);
+        gameTime += deltaTime / 1000;
+
+        score += deltaTime * 0.01;
+
+        if (pope.invincibility > 0) {
+          pope.invincibility -= deltaTime;
+          if (pope.invincibility <= 0) pope.speedX = pope.baseSpeedX;
+        }
+
+        if (pope.isJumping) {
+          pope.y += pope.jumpSpeed * (deltaTime / fixedTimeStep);
+          pope.jumpSpeed += pope.gravity * (deltaTime / fixedTimeStep);
+          if (pope.y >= getVariedTerrainHeight(worldX + pope.x)) {
+            pope.y = getVariedTerrainHeight(worldX + pope.x);
+            pope.isJumping = false;
+          }
+        } else {
+          pope.y = getVariedTerrainHeight(worldX + pope.x);
+        }
+
+        pope.animationFrame += deltaTime * 0.01;
+        crosses.forEach(cross => cross.rotation += deltaTime * 0.005);
+        obstacles.forEach(obstacle => obstacle.pulse = 1 + Math.sin(gameTime * 3) * 0.2);
+        powerUps.forEach(powerUp => powerUp.timer += deltaTime * 0.02);
+
+        if (endlessMode && gameTime - lastBgChange > 5) {
+          currentBgColor = `hsl(${Math.random() * 360}, 70%, 70%)`;
+          lastBgChange = gameTime;
+        }
+
+        crosses = crosses.filter(cross => {
+          const screenX = cross.x - worldX;
+          const dist = Math.hypot(pope.x - screenX, pope.y - cross.y);
+          if (dist < pope.size + cross.size) {
+            collected++;
+            score += 100;
+            crossCountForLife++;
+            if (crossCountForLife >= 4 && pope.lives < maxLives) {
+              pope.lives++;
+              crossCountForLife = 0;
+              orbChanges.push({ x: pope.x, y: pope.y - 40, text: "+1 Life", time: 1000 });
+            }
+            orbChanges.push({ x: pope.x, y: pope.y - 20, text: "+100", time: 1000 });
+            spawnParticles(pope.x, pope.y, 10, '#FFD700');
+            coinSound.play();
+            canvas.style.filter = `grayscale(${100 - (collected / maxCrosses) * 100}%)`;
+            updateStory();
+            if (collected >= maxCrosses && !endlessMode) {
+              endlessMode = true;
+            }
+            return false;
+          }
+          return true;
+        });
+
+        obstacles = obstacles.filter(obstacle => {
+          const screenX = obstacle.x - worldX;
+          const dist = Math.hypot(pope.x - screenX, pope.y - obstacle.y);
+          if (dist < pope.size + obstacle.size && pope.invincibility <= 0) {
+            pope.lives--;
+            score -= 50;
+            orbChanges.push({ x: pope.x, y: pope.y - 20, text: "-50", time: 1000 });
+            spawnParticles(pope.x, pope.y, 8, '#FF0000');
+            hitSound.play();
+            if (pope.lives <= 0) {
+              gameOver = true;
+              showScoreForm('gameover');
+            }
+            return false;
+          }
+          return true;
+        });
+
+        powerUps = powerUps.filter(powerUp => {
+          const screenX = powerUp.x - worldX;
+          const dist = Math.hypot(pope.x - screenX, pope.y - powerUp.y);
+          if (dist < pope.size + powerUp.size) {
+            powerUpSound.play();
+            pope.invincibility = 5000;
+            spawnParticles(pope.x, pope.y, 15, getPowerUpColor(powerUp.type));
+            switch (powerUp.type) {
+              case 'speed':
+                pope.speedX = pope.baseSpeedX * 2;
+                orbChanges.push({ x: pope.x, y: pope.y - 20, text: "Speed Up!", time: 1000 });
+                break;
+              case 'doubleScore':
+                score += gameTime * 0.01 * 2;
+                orbChanges.push({ x: pope.x, y: pope.y - 20, text: "Double Score!", time: 1000 });
+                break;
+              case 'extraJump':
+                pope.jumpSpeed = -20;
+                setTimeout(() => { pope.jumpSpeed = -15; }, 5000);
+                orbChanges.push({ x: pope.x, y: pope.y - 20, text: "Extra Jump!", time: 1000 });
+                break;
+            }
+            return false;
+          }
+          return true;
+        });
+
+        orbChanges = orbChanges.filter(change => {
+          change.y -= 1 * (deltaTime / fixedTimeStep);
+          change.time -= deltaTime;
+          return change.time > 0;
+        });
+
+        particles = particles.filter(particle => {
+          particle.x += particle.vx * (deltaTime / fixedTimeStep);
+          particle.y += particle.vy * (deltaTime / fixedTimeStep);
+          particle.life -= deltaTime;
+          particle.vy += 0.1;
+          return particle.life > 0;
+        });
+
+        if (crosses.length < 5) spawnCross();
+        if (obstacles.length < 3) spawnObstacle();
+        if (gameTime - lastPowerUpTime > 15 && powerUps.length < 1) {
+          spawnPowerUp();
+          lastPowerUpTime = gameTime;
+        }
+
+        crosses = crosses.filter(cross => cross.x - worldX > -50);
+        obstacles = obstacles.filter(obstacle => obstacle.x - worldX > -50);
+        powerUps = powerUps.filter(powerUp => powerUp.x - worldX > -50);
+
+        if (collected >= maxCrosses && !endlessMode) {
+          gameOver = true;
+          showScoreForm('victory');
+        }
+      }
+
+      function getPowerUpColor(type) {
+        switch (type) {
+          case 'speed': return '#00FFFF';
+          case 'doubleScore': return '#FF00FF';
+          case 'extraJump': return '#00FF00';
+          default: return '#FFFF00';
+        }
+      }
+
+      function draw() {
+  ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+  const gradient = ctx.createLinearGradient(0, 0, canvas.width, canvas.height);
+  gradient.addColorStop(0, endlessMode ? currentBgColor : '#87CEEB');
+  gradient.addColorStop(1, '#8B4513');
+  ctx.fillStyle = gradient;
+  ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+  ctx.fillStyle = '#FFD700';
+  ctx.beginPath();
+  for (let i = 0; i <= canvas.width; i += 2) {
+    const worldPos = worldX + i;
+    const terrainY = getVariedTerrainHeight(worldPos);
+    if (i === 0) ctx.moveTo(i, terrainY);
+    else ctx.lineTo(i, terrainY);
+  }
+  ctx.lineTo(canvas.width, canvas.height);
+  ctx.lineTo(0, canvas.height);
+  ctx.closePath();
+  ctx.fill();
+
+  ctx.save();
+  ctx.translate(pope.x, pope.y);
+  ctx.scale(pope.scale, pope.scale);
+  if (pope.invincibility > 0) {
+    ctx.globalAlpha = Math.sin(gameTime * 10) * 0.3 + 0.7;
+  }
+  ctx.drawImage(popeImage, -pope.size, -pope.size * 2, pope.size * 2, pope.size * 2);
+  ctx.globalAlpha = 1;
+  ctx.restore();
+
+  if (gameStarted) {
+    ctx.fillStyle = '#DAA520';
+    crosses.forEach(cross => {
+      const screenX = cross.x - worldX;
+      ctx.save();
+      ctx.translate(screenX, cross.y);
+      ctx.rotate(cross.rotation);
+      ctx.beginPath();
+      ctx.moveTo(0, -cross.size);
+      ctx.lineTo(0, cross.size);
+      ctx.moveTo(-cross.size, 0);
+      ctx.lineTo(cross.size, 0);
+      ctx.strokeStyle = '#DAA520';
+      ctx.lineWidth = 3;
+      ctx.stroke();
+      ctx.restore();
+    });
+
+    ctx.fillStyle = '#FF0000';
+    obstacles.forEach(obstacle => {
+      const screenX = obstacle.x - worldX;
+      ctx.save();
+      ctx.translate(screenX, obstacle.y);
+      ctx.scale(obstacle.pulse, obstacle.pulse);
+      ctx.beginPath();
+      ctx.moveTo(0, -obstacle.size);
+      ctx.lineTo(-obstacle.size / 2, 0);
+      ctx.lineTo(obstacle.size / 2, 0);
+      ctx.closePath();
+      ctx.fill();
+      ctx.restore();
+    });
+
+    powerUps.forEach(powerUp => {
+      const screenX = powerUp.x - worldX;
+      ctx.save();
+      ctx.translate(screenX, powerUp.y);
+      ctx.fillStyle = getPowerUpColor(powerUp.type);
+      ctx.beginPath();
+      ctx.arc(0, 0, powerUp.size * (1 + Math.sin(powerUp.timer) * 0.2), 0, Math.PI * 2);
+      ctx.fill();
+      ctx.restore();
+    });
+
+    particles.forEach(particle => {
+      ctx.fillStyle = particle.color;
+      ctx.beginPath();
+      ctx.arc(particle.x, particle.y, particle.size, 0, Math.PI * 2);
+      ctx.fill();
+    });
+
+    ctx.fillStyle = '#333';
+    ctx.font = '24px Arial';
+    ctx.textAlign = 'center';
+    if (!endlessMode) {
+      ctx.fillText(`Collect ${maxCrosses} Pope Crosses to reach Endless Mode!`, canvas.width / 2, 30);
+    } else {
+      ctx.font = '36px Arial';
+      ctx.fillStyle = '#FFFFFF';
+      ctx.fillText('ENDLESS MODE', canvas.width / 2, 40);
+      ctx.font = '24px Arial';
+      ctx.fillStyle = '#333';
+    }
+    ctx.fillText(`Time: ${Math.floor(gameTime)}s | Score: ${Math.floor(score)} | Lives: ${pope.lives}`, canvas.width / 2, 60);
+    if (pope.invincibility > 0) ctx.fillText(`Power: ${Math.ceil(pope.invincibility/1000)}s`, canvas.width / 2, 90);
+
+    ctx.textAlign = 'left';
+    ctx.font = '20px Arial';
+    ctx.fillStyle = '#FFFFFF';
+    ctx.fillText('Leaderboard', 10, 30);
+    if (highScores && highScores.length > 0) {
+      ctx.font = '24px Arial';
+      ctx.fillStyle = '#FFD700';
+      // Ensure the first score exists and has the expected structure
+      if (highScores[0] && highScores[0].name && typeof highScores[0].score === 'number') {
+        ctx.fillText(`Top: ${highScores[0].name} : ${highScores[0].score}`, 10, 60);
+      } else {
+        console.warn('Invalid top high score:', highScores[0]);
+        ctx.fillText('No valid high scores', 10, 60);
+      }
+      ctx.font = '18px Arial';
+      ctx.fillStyle = '#FFFFFF';
+      highScores.slice(1).forEach((entry, index) => {
+        if (entry && entry.name && typeof entry.score === 'number') {
+          ctx.fillText(`${index + 2}. ${entry.name} : ${entry.score}`, 10, 90 + index * 25);
+        }
+      });
+    } else {
+      ctx.fillText('No high scores available', 10, 60);
+    }
+  }
+
+  ctx.font = '20px Arial';
+  ctx.textAlign = 'center';
+  orbChanges.forEach(change => {
+    ctx.fillStyle = change.text.startsWith('+') ? '#00FF00' : '#FF0000';
+    ctx.fillText(change.text, change.x, change.y);
+  });
+}
+
+      function gameLoop(currentTime) {
+        const deltaTime = Math.min(currentTime - lastTime, 100);
+        lastTime = currentTime;
+
+        update(deltaTime);
+        draw();
+
+        requestAnimationFrame(gameLoop);
+      }
+
+      // Firebase functions for high scores
+      async function loadHighScores() {
+      try {
+        const querySnapshot = await getDocs(collection(db, 'highScores'), orderBy('score', 'desc'), limit(10));
+        highScores = querySnapshot.docs
+          .map(doc => {
+            const data = doc.data();
+            // Validate that the document has the required fields
+            if (!data.name || typeof data.name !== 'string' || 
+                typeof data.score !== 'number' || 
+                !data.timestamp) {
+              console.warn('Invalid high score document:', data);
+              return null; // Skip invalid documents
+            }
+            return {
+              name: data.name.trim(),
+              score: data.score,
+              timestamp: data.timestamp // Keep as-is for sorting/display
+            };
+          })
+          .filter(score => score !== null) // Remove any null entries from invalid documents
+          .sort((a, b) => b.score - a.score); // Ensure sorting by score (descending)
+        console.log('High scores loaded successfully:', highScores);
+      } catch (error) {
+        console.error("Error loading high scores: ", error);
+        highScores = []; // Fallback to empty array on error
+        alert('Failed to load high scores. Please try again. Error: ' + error.message);
+      }
+    }
+
+    async function saveHighScore(name, score) {
+      if (hasSaved) return; // Prevent duplicate saves in one game
+
+      // Validate input data
+      if (!name || typeof name !== 'string' || name.trim() === '') {
+        console.error('Invalid name provided for high score:', name);
+        alert('Please enter a valid name to save your score.');
+        return;
+      }
+      if (typeof score !== 'number' || isNaN(score)) {
+        console.error('Invalid score provided:', score);
+        alert('Invalid score format. Please try again.');
+        return;
+      }
+
+      const newScore = { name: name.trim(), score, timestamp: serverTimestamp() };
+      try {
+        await addDoc(collection(db, 'highScores'), newScore);
+        await loadHighScores(); // Refresh high scores after saving
+        hasSaved = true;
+        document.getElementById('submitScoreButton').textContent = 'Saved';
+        document.getElementById('submitScoreButton').disabled = true;
+        console.log('High score saved successfully:', newScore);
+      } catch (error) {
+        console.error('Error saving high score:', error);
+        alert('Failed to save score. Please try again. Error: ' + error.message);
+        if (error.code === 'permission-denied') {
+          alert('Permission denied. Please check Firebase Security Rules or ensure you’re authenticated.');
+        } else if (error.code === 'network-error') {
+          alert('Network error. Please check your internet connection.');
+        }
+      }
+    }
+
+          // Load high scores when the page loads
+        loadHighScores();
+
+      playButton.addEventListener('click', startGame);
+
+      requestAnimationFrame(gameLoop);
+    });
+
+    function resizeCanvas() {
+  const aspectRatio = 1300 / 800; // Game canvas aspect ratio
+  const maxWidth = window.innerWidth * 0.9; // 90% of screen width
+  const maxHeight = window.innerHeight * 0.7; // 70% of screen height for mobile
+  let newWidth = maxWidth;
+  let newHeight = newWidth / aspectRatio;
+
+  if (newHeight > maxHeight) {
+    newHeight = maxHeight;
+    newWidth = newHeight * aspectRatio;
+  }
+
+  canvas.width = newWidth;
+  canvas.height = newHeight;
+}
+
+window.addEventListener('resize', resizeCanvas);
+document.addEventListener('DOMContentLoaded', resizeCanvas);
+  </script>
+  <script src="https://code.responsivevoice.org/responsivevoice.js?key=xDV4qioj"></script>
+</body>
+</html>
